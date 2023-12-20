@@ -43,13 +43,14 @@ int main(const int argc, const char * argv[])
     FILE * pkFile;
     pkFile = fopen(kInputImage.c_str(), "r");
     fseek(pkFile, 0, SEEK_END);
-    long lFileByteSize = ftell(pkFile);
+    const long lFileByteSize = ftell(pkFile);
     rewind(pkFile);
     float * pfImage = (float*)malloc(lFileByteSize);
     size_t iStat = fread(pfImage, 1, lFileByteSize, pkFile);
     fclose(pkFile);
 
-    const float fInvNumElem = 1.0f / float(lFileByteSize / sizeof(float));
+    const long numElem = lFileByteSize / sizeof(float);
+    const float fInvNumElem = 1.0f / float(numElem);
 
     vector<NormalizedCorrelation> kAtlasCorrelations;
     
@@ -102,16 +103,24 @@ int main(const int argc, const char * argv[])
         pkFile = fopen(kAtlasFilename.c_str(), "r");
         float * pfAtlasImage;
         unsigned short * psAtlasImage;
-        unsigned int numVoxels = aiDimSize[0]* aiDimSize[1]* aiDimSize[2];
+        long alNumElem = aiDimSize[0] * aiDimSize[1] * aiDimSize[2];
+
+        if (alNumElem != numElem) {
+            cout << "wrong number of elements: " << alNumElem;
+            cout << " != " << numElem;
+            cout << endl;
+            exit(-2);
+        }
+
         if ( bUShortType )
         {
-            psAtlasImage = (unsigned short *)malloc( numVoxels * sizeof(unsigned short));
-            iStat = fread(psAtlasImage, numVoxels, sizeof(unsigned short), pkFile);
+            psAtlasImage = (unsigned short *)malloc( alNumElem * sizeof(unsigned short));
+            iStat = fread(psAtlasImage, alNumElem, sizeof(unsigned short), pkFile);
         }
         else
         {
-            pfAtlasImage = (float *)malloc( numVoxels * sizeof(float));
-            iStat = fread(pfAtlasImage, numVoxels, sizeof(float), pkFile);
+            pfAtlasImage = (float *)malloc( alNumElem * sizeof(float));
+            iStat = fread(pfAtlasImage, alNumElem, sizeof(float), pkFile);
         }
         fclose(pkFile);
 
@@ -121,7 +130,7 @@ int main(const int argc, const char * argv[])
         float fBSum = 0.0f;
         float fASquaredSum = 0.0f;
         float fBSquaredSum = 0.0f;
-        for ( int i = 0; i < aiDimSize[0]* aiDimSize[1]* aiDimSize[2]; i++ )
+        for ( int i = 0; i < alNumElem; i++ )
         {
             float fA = pfImage[i];
             float fB;
