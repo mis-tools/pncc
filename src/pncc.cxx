@@ -125,15 +125,15 @@ int main(const int argc, const char * argv[])
         fclose(pkFile);
 
         // calculate normalized cross correlation
-        float fABProdSum = 0.0f;
-        float fASum = 0.0f;
-        float fBSum = 0.0f;
-        float fASquaredSum = 0.0f;
-        float fBSquaredSum = 0.0f;
+        double fABProdSum = 0.0f;
+        double fASum = 0.0f;
+        double fBSum = 0.0f;
+        double fASquaredSum = 0.0f;
+        double fBSquaredSum = 0.0f;
         for ( int i = 0; i < alNumElem; i++ )
         {
-            float fA = pfImage[i];
-            float fB;
+            double fA = pfImage[i];
+            double fB;
             if ( bUShortType )
             {
                   fB = static_cast<float>(psAtlasImage[i]);
@@ -149,14 +149,13 @@ int main(const int argc, const char * argv[])
             fASquaredSum += fA * fA;
             fBSquaredSum += fB * fB;
         }
-        const float mean_s = fBSum * fInvNumElem;
-        const float mean_t = fASum * fInvNumElem;
-        const float var_s = fBSquaredSum * fInvNumElem - mean_s * mean_s;
-        const float var_t = fASquaredSum * fInvNumElem - mean_t * mean_t;
-        const float covariance = fABProdSum * fInvNumElem - mean_s*mean_t;
+        const double mean_s = fBSum * fInvNumElem;
+        const double mean_t = fASum * fInvNumElem;
+        const double var_s = fBSquaredSum * fInvNumElem - mean_s * mean_s;
+        const double var_t = fASquaredSum * fInvNumElem - mean_t * mean_t;
+        const double covariance = fABProdSum * fInvNumElem - mean_s*mean_t;
 
-        float fResult;
-
+        double fResult;
         if ((var_s < 0.00001f) || (var_t < 0.00001f) )
         {
             fResult = -1.0f;
